@@ -1,0 +1,324 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         #line   1                "..\\..\\..\\..\\..\\Software\\
+uC-CPU\\ARM-Cortex-M0\\RealView\\cpu_a.asm"
+    1 00000000         ;*******************************************************
+                       *************************************************
+    2 00000000         ;                                                uC/CPU
+    3 00000000         ;                                    CPU CONFIGURATION &
+                        PORT LAYER
+    4 00000000         ;
+    5 00000000         ;                          (c) Copyright 2004-2013; Micr
+                       ium, Inc.; Weston, FL
+    6 00000000         ;
+    7 00000000         ;               All rights reserved.  Protected by inter
+                       national copyright laws.
+    8 00000000         ;
+    9 00000000         ;               uC/CPU is provided in source form to reg
+                       istered licensees ONLY.  It is 
+   10 00000000         ;               illegal to distribute this source code t
+                       o any third party unless you receive 
+   11 00000000         ;               written permission by an authorized Micr
+                       ium representative.  Knowledge of 
+   12 00000000         ;               the source code may NOT be used to devel
+                       op a similar product.
+   13 00000000         ;
+   14 00000000         ;               Please help us continue to provide the E
+                       mbedded community with the finest 
+   15 00000000         ;               software available.  Your honesty is gre
+                       atly appreciated.
+   16 00000000         ;
+   17 00000000         ;               You can find our product's user manual, 
+                       API reference, release notes and
+   18 00000000         ;               more information at https:
+   19 00000000         ;               You can contact us at www.micrium.com.
+   20 00000000         ;*******************************************************
+                       *************************************************
+   21 00000000         
+   22 00000000         ;*******************************************************
+                       *************************************************
+   23 00000000         ;
+   24 00000000         ;                                            CPU PORT FI
+                       LE
+   25 00000000         ;
+   26 00000000         ;                                            ARM-Cortex-
+                       M0
+   27 00000000         ;                                      RealView Developm
+                       ent Suite
+   28 00000000         ;                            RealView Microcontroller De
+                       velopment Kit (MDK)
+   29 00000000         ;                                       ARM Developer Su
+                       ite (ADS)
+   30 00000000         ;                                            Keil uVisio
+                       n
+   31 00000000         ;
+   32 00000000         ; Filename      : cpu_a.asm
+   33 00000000         ; Version       : V1.29.02.00
+   34 00000000         ; Programmer(s) : BAN
+   35 00000000         ;                 MD
+   36 00000000         ;*******************************************************
+                       *************************************************
+   37 00000000         
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   38 00000000         
+   39 00000000         ;*******************************************************
+                       *************************************************
+   40 00000000         ;                                           PUBLIC FUNCT
+                       IONS
+   41 00000000         ;*******************************************************
+                       *************************************************
+   42 00000000         
+   43 00000000                 EXPORT           CPU_IntDis
+   44 00000000                 EXPORT           CPU_IntEn
+   45 00000000         
+   46 00000000                 EXPORT           CPU_SR_Save
+   47 00000000                 EXPORT           CPU_SR_Restore
+   48 00000000         
+   49 00000000                 EXPORT           CPU_WaitForInt
+   50 00000000                 EXPORT           CPU_WaitForExcept
+   51 00000000         
+   52 00000000         
+   53 00000000         ;*******************************************************
+                       *************************************************
+   54 00000000         ;                                      CODE GENERATION D
+                       IRECTIVES
+   55 00000000         ;*******************************************************
+                       *************************************************
+   56 00000000         
+   57 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+   58 00000000                 THUMB
+   59 00000000                 REQUIRE8
+   60 00000000                 PRESERVE8
+   61 00000000         
+   62 00000000         ;*******************************************************
+                       *************************************************
+   63 00000000         ;                                    DISABLE and ENABLE 
+                       INTERRUPTS
+   64 00000000         ;
+   65 00000000         ; Description : Disable/Enable interrupts.
+   66 00000000         ;
+   67 00000000         ; Prototypes  : void  CPU_IntDis(void);
+   68 00000000         ;               void  CPU_IntEn (void);
+   69 00000000         ;*******************************************************
+                       *************************************************
+   70 00000000         
+   71 00000000         CPU_IntDis
+   72 00000000 B672            CPSID            I
+   73 00000002 4770            BX               LR
+   74 00000004         
+   75 00000004         
+   76 00000004         CPU_IntEn
+   77 00000004 B662            CPSIE            I
+   78 00000006 4770            BX               LR
+   79 00000008         
+   80 00000008         
+   81 00000008         ;*******************************************************
+                       *************************************************
+   82 00000008         ;                                      CRITICAL SECTION 
+                       FUNCTIONS
+   83 00000008         ;
+   84 00000008         ; Description : Disable/Enable interrupts by preserving 
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+                       the state of interrupts.  Generally speaking, the
+   85 00000008         ;               state of the interrupt disable flag is s
+                       tored in the local variable 'cpu_sr' & interrupts
+   86 00000008         ;               are then disabled ('cpu_sr' is allocated
+                        in all functions that need to disable interrupts).
+   87 00000008         ;               The previous interrupt state is restored
+                        by copying 'cpu_sr' into the CPU's status register.
+   88 00000008         ;
+   89 00000008         ; Prototypes  : CPU_SR  CPU_SR_Save   (void);
+   90 00000008         ;               void    CPU_SR_Restore(CPU_SR  cpu_sr);
+   91 00000008         ;
+   92 00000008         ; Note(s)     : (1) These functions are used in general 
+                       like this :
+   93 00000008         ;
+   94 00000008         ;                       void  Task (void  *p_arg)
+   95 00000008         ;                       {
+   96 00000008         ;                           CPU_SR_ALLOC();             
+                                
+   97 00000008         ;                               :
+   98 00000008         ;                               :
+   99 00000008         ;                           CPU_CRITICAL_ENTER();       
+                                
+  100 00000008         ;                               :
+  101 00000008         ;                               :
+  102 00000008         ;                           CPU_CRITICAL_EXIT();        
+                                
+  103 00000008         ;                               :
+  104 00000008         ;                       }
+  105 00000008         ;*******************************************************
+                       *************************************************
+  106 00000008         
+  107 00000008         CPU_SR_Save
+  108 00000008 F3EF 8010       MRS              R0, PRIMASK ; Set prio int mask
+                                                             to mask all (excep
+                                                            t faults)
+  109 0000000C B672            CPSID            I
+  110 0000000E 4770            BX               LR
+  111 00000010         
+  112 00000010         
+  113 00000010         CPU_SR_Restore                       ; See Note #2.
+  114 00000010 F380 8810       MSR              PRIMASK, R0
+  115 00000014 4770            BX               LR
+  116 00000016         
+  117 00000016         
+  118 00000016         ;*******************************************************
+                       *************************************************
+  119 00000016         ;                                         WAIT FOR INTER
+                       RUPT
+  120 00000016         ;
+  121 00000016         ; Description : Enters sleep state, which will be exited
+                        when an interrupt is received.
+  122 00000016         ;
+  123 00000016         ; Prototypes  : void  CPU_WaitForInt (void)
+  124 00000016         ;
+  125 00000016         ; Argument(s) : none.
+  126 00000016         ;*******************************************************
+                       *************************************************
+  127 00000016         
+  128 00000016         CPU_WaitForInt
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+  129 00000016 BF30            WFI                          ; Wait for interrup
+                                                            t
+  130 00000018 4770            BX               LR
+  131 0000001A         
+  132 0000001A         
+  133 0000001A         ;*******************************************************
+                       *************************************************
+  134 0000001A         ;                                         WAIT FOR EXCEP
+                       TION
+  135 0000001A         ;
+  136 0000001A         ; Description : Enters sleep state, which will be exited
+                        when an exception is received.
+  137 0000001A         ;
+  138 0000001A         ; Prototypes  : void  CPU_WaitForExcept (void)
+  139 0000001A         ;
+  140 0000001A         ; Argument(s) : none.
+  141 0000001A         ;*******************************************************
+                       *************************************************
+  142 0000001A         
+  143 0000001A         CPU_WaitForExcept
+  144 0000001A BF20            WFE                          ; Wait for exceptio
+                                                            n
+  145 0000001C 4770            BX               LR
+  146 0000001E         
+  147 0000001E         
+  148 0000001E         ;*******************************************************
+                       *************************************************
+  149 0000001E         ;                                     CPU ASSEMBLY PORT 
+                       FILE END
+  150 0000001E         ;*******************************************************
+                       *************************************************
+  151 0000001E         
+  152 0000001E                 END
+Command Line: --debug --xref --cpreproc --diag_suppress=9931 --cpu=Cortex-M0+ -
+-apcs=interwork --depend=.\output\cpu_a.d -o.\output\cpu_a.o -I.. -I"C:\Users\A
+dministrator\Desktop\learning_20151113\KL46_StepCounter\Micrium_FRDM-KL46Z_OS3\
+Micrium\Examples\Freescale\FRDM-KL46Z\OS3\Keil MDK\RTE" -ID:\Keil_v5\ARM\PACK\K
+eil\Kinetis_KLxx_DFP\1.8.0\Device\Include -ID:\Keil_v5\ARM\CMSIS\Include --pred
+efine="__UVISION_VERSION SETA 515" --predefine="MKL46Z256xxx4 SETA 1" --list=.\
+cpu_a.lst ..\..\..\..\..\Software\uC-CPU\ARM-Cortex-M0\RealView\cpu_a.asm
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 57 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+   Uses
+      None
+Comment: .text unused
+CPU_IntDis 00000000
+
+Symbol: CPU_IntDis
+   Definitions
+      At line 71 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+   Uses
+      At line 43 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+Comment: CPU_IntDis used once
+CPU_IntEn 00000004
+
+Symbol: CPU_IntEn
+   Definitions
+      At line 76 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+   Uses
+      At line 44 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+Comment: CPU_IntEn used once
+CPU_SR_Restore 00000010
+
+Symbol: CPU_SR_Restore
+   Definitions
+      At line 113 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\
+RealView\\cpu_a.asm
+   Uses
+      At line 47 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+Comment: CPU_SR_Restore used once
+CPU_SR_Save 00000008
+
+Symbol: CPU_SR_Save
+   Definitions
+      At line 107 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\
+RealView\\cpu_a.asm
+   Uses
+      At line 46 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+Comment: CPU_SR_Save used once
+CPU_WaitForExcept 0000001A
+
+Symbol: CPU_WaitForExcept
+   Definitions
+      At line 143 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\
+RealView\\cpu_a.asm
+   Uses
+      At line 50 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+Comment: CPU_WaitForExcept used once
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+CPU_WaitForInt 00000016
+
+Symbol: CPU_WaitForInt
+   Definitions
+      At line 128 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\
+RealView\\cpu_a.asm
+   Uses
+      At line 49 in file ..\\..\\..\\..\\..\\Software\\uC-CPU\\ARM-Cortex-M0\\R
+ealView\\cpu_a.asm
+Comment: CPU_WaitForInt used once
+7 symbols
+339 symbols in table

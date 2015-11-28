@@ -1,0 +1,11 @@
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-CPU\cpu_core.c
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-CPU\cpu_core.h
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-CPU\ARM-Cortex-M0\RealView\cpu.h
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-CPU\cpu_def.h
+.\output\cpu_core.o: ..\cpu_cfg.h
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-LIB\lib_def.h
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-LIB\lib_mem.h
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-CPU\cpu_core.h
+.\output\cpu_core.o: ..\lib_cfg.h
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-LIB\lib_str.h
+.\output\cpu_core.o: ..\..\..\..\..\Software\uC-LIB\lib_ascii.h

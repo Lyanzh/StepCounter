@@ -1,0 +1,15 @@
+.\output\os_time.o: ..\..\..\..\..\Software\uCOS-III\Source\os_time.c
+.\output\os_time.o: ..\..\..\..\..\Software\uCOS-III\Source\os.h
+.\output\os_time.o: ..\os_cfg.h
+.\output\os_time.o: ..\..\..\..\..\Software\uC-CPU\cpu_core.h
+.\output\os_time.o: ..\..\..\..\..\Software\uC-CPU\ARM-Cortex-M0\RealView\cpu.h
+.\output\os_time.o: ..\..\..\..\..\Software\uC-CPU\cpu_def.h
+.\output\os_time.o: ..\cpu_cfg.h
+.\output\os_time.o: ..\..\..\..\..\Software\uC-LIB\lib_def.h
+.\output\os_time.o: ..\..\..\..\..\Software\uC-LIB\lib_mem.h
+.\output\os_time.o: ..\..\..\..\..\Software\uC-CPU\cpu_core.h
+.\output\os_time.o: ..\lib_cfg.h
+.\output\os_time.o: ..\..\..\..\..\Software\uC-LIB\lib_str.h
+.\output\os_time.o: ..\..\..\..\..\Software\uC-LIB\lib_ascii.h
+.\output\os_time.o: ..\..\..\..\..\Software\uCOS-III\Source\os_type.h
+.\output\os_time.o: ..\..\..\..\..\Software\uCOS-III\Ports\ARM-Cortex-M0\Generic\RealView\os_cpu.h
